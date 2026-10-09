@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShellRouteImport } from './routes/_shell'
+import { Route as ShellHistoricoRouteImport } from './routes/_shell.historico'
+import { Route as ShellIncidentesRouteImport } from './routes/_shell.incidentes'
+import { Route as ShellWarRoomRouteImport } from './routes/_shell.war-room'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShellRoute = ShellRouteImport.update({
+  id: '/_shell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShellHistoricoRoute = ShellHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellIncidentesRoute = ShellIncidentesRouteImport.update({
+  id: '/incidentes',
+  path: '/incidentes',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellWarRoomRoute = ShellWarRoomRouteImport.update({
+  id: '/war-room',
+  path: '/war-room',
+  getParentRoute: () => ShellRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/historico': typeof ShellHistoricoRoute
+  '/incidentes': typeof ShellIncidentesRoute
+  '/war-room': typeof ShellWarRoomRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/historico': typeof ShellHistoricoRoute
+  '/incidentes': typeof ShellIncidentesRoute
+  '/war-room': typeof ShellWarRoomRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_shell': typeof ShellRouteWithChildren
+  '/_shell/historico': typeof ShellHistoricoRoute
+  '/_shell/incidentes': typeof ShellIncidentesRoute
+  '/_shell/war-room': typeof ShellWarRoomRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/historico' | '/incidentes' | '/war-room'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/historico' | '/incidentes' | '/war-room'
+  id:
+    | '__root__'
+    | '/'
+    | '/_shell'
+    | '/_shell/historico'
+    | '/_shell/incidentes'
+    | '/_shell/war-room'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ShellRoute: typeof ShellRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +88,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_shell': {
+      id: '/_shell'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ShellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_shell/historico': {
+      id: '/_shell/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof ShellHistoricoRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/incidentes': {
+      id: '/_shell/incidentes'
+      path: '/incidentes'
+      fullPath: '/incidentes'
+      preLoaderRoute: typeof ShellIncidentesRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/war-room': {
+      id: '/_shell/war-room'
+      path: '/war-room'
+      fullPath: '/war-room'
+      preLoaderRoute: typeof ShellWarRoomRouteImport
+      parentRoute: typeof ShellRoute
+    }
   }
 }
 
+interface ShellRouteChildren {
+  ShellHistoricoRoute: typeof ShellHistoricoRoute
+  ShellIncidentesRoute: typeof ShellIncidentesRoute
+  ShellWarRoomRoute: typeof ShellWarRoomRoute
+}
+
+const ShellRouteChildren: ShellRouteChildren = {
+  ShellHistoricoRoute: ShellHistoricoRoute,
+  ShellIncidentesRoute: ShellIncidentesRoute,
+  ShellWarRoomRoute: ShellWarRoomRoute,
+}
+
+const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ShellRoute: ShellRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Demo state lives in a persisted Zustand store (src/lib/sentinel); agent pipeline status is derived from timestamps in pure logic functions so it survives reloads and stays unit-testable.
